@@ -18,9 +18,9 @@ Enter a URL, get a brutally honest SEO analysis report. Improve your website thr
 ## Features
 
 - **20 SEO Checks**: Covers fundamentals, social, structured data, and more
-- **Savage Roasts**: Each issue comes with randomly selected brutal commentary
+- **Savage Tsundere Roasts**: Each issue comes with brutal + tsundere style commentary
 - **Grade System**: S/A/B/C/F ratings with overall assessment
-- **Dark UI**: Immersive experience matching the roasting vibe
+- **Contrast Cute UI**: Cute pink appearance × savage tsundere content (gap moe)
 - **Zero Frontend Dependencies**: Pure HTML/CSS/JS, no npm required
 
 ---
@@ -73,27 +73,27 @@ Enter a URL, get a brutally honest SEO analysis report. Improve your website thr
 
 | Grade | Score Range | Roast Level |
 |-------|-------------|-------------|
-| **S** | 90-100 | Reluctant approval (tsundere-style) |
-| **A** | 70-89 | Minor issue mockery |
-| **B** | 50-69 | Medium roast |
-| **C** | 30-49 | Heavy roast |
-| **F** | 0-29 | Total destruction |
+| **S** | 90-100 | Reluctant approval ("Fine, you pass...") |
+| **A** | 70-89 | Minor mockery ("Almost there, dummy!") |
+| **B** | 50-69 | Medium roast ("So mediocre...") |
+| **C** | 30-49 | Heavy roast ("What a mess!") |
+| **F** | 0-29 | Total destruction ("Idiot!") |
 
 ---
 
 ## Roast Examples
 
 **Missing Title:**
-> "No title? How is a search engine supposed to know you exist, telepathy?"
+> "No title? This kindergarten-level mistake... Hmph, it's not like I want to help you!"
 
 **Missing Meta Description:**
-> "No description? Letting Google guess, gambling on luck?"
+> "No description? Letting Google randomly grab content as your intro? Gambling, are we!"
 
 **Wrong H1 Count:**
-> "3 H1s? Are you writing a newspaper headline mashup?"
+> "3 H1s? Are you holding a press conference where everyone's the headline? Idiot!"
 
 **No HTTPS:**
-> "Still using HTTP? It's 2025, your security is stuck in the stone age."
+> "Still using HTTP? It's 2025, your security is stuck in the stone age!"
 
 ---
 
@@ -192,7 +192,7 @@ day-20-seo-roaster/
 │       ├── templates/
 │       │   └── index.html      # Frontend page
 │       └── static/
-│           └── style.css       # Dark theme styles
+│           └── style.css       # Cute pink theme styles
 ├── pyproject.toml
 ├── Procfile                    # Gunicorn config
 ├── README.md
@@ -249,9 +249,10 @@ Edit CSS variables in `static/style.css`:
 
 ```css
 :root {
-    --bg-primary: #0a0a0a;      /* Background */
-    --accent-red: #ff4444;       /* Primary accent */
-    --accent-green: #00ff88;     /* Passed items */
+    --bg-cream: #fff5f8;         /* Cream pink background */
+    --accent-pink: #ff6b9d;      /* Primary pink accent */
+    --accent-coral: #ff8fab;     /* Coral pink */
+    --success-mint: #7dd3a8;     /* Passed items mint green */
     /* ... */
 }
 ```
