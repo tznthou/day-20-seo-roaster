@@ -108,6 +108,46 @@ Enter a URL, get a brutally honest SEO analysis report. Improve your website thr
 
 ---
 
+## Security Updates
+
+> **Updated**: 2025-12-18
+
+This project has been patched for the following security issues and is safe for production deployment.
+
+### 🔴 Critical (Fixed)
+
+| Issue | Description | Fix |
+|-------|-------------|-----|
+| **SSRF Vulnerability** | Users could input internal IPs to access intranet resources | Added IP blocklist validation, DNS rebinding protection, redirect verification |
+| **XSS Vulnerability** | Frontend innerHTML without escaping could execute malicious scripts | All dynamic content processed through `escapeHTML()` |
+
+### 🟠 High Priority (Fixed)
+
+| Issue | Description | Fix |
+|-------|-------------|-----|
+| **No URL Length Limit** | Could cause DoS or ReDoS | Frontend `maxlength="2048"`, backend validation |
+| **No Rate Limiting** | Could be abused for attacks | Custom rate limiter, max 10 requests per minute |
+| **No URL Format Validation** | Invalid inputs waste resources | Frontend regex validation |
+| **Error Message Leakage** | Could expose internal paths | Unified error messages, detailed info logged |
+
+### 🟡 Medium Priority (Fixed)
+
+| Issue | Description | Fix |
+|-------|-------------|-----|
+| **Timeout Too Long** | 15 seconds made users wait too long | Adjusted to 8 seconds |
+| **HTML Parsing Could Fail** | lxml might crash on malformed HTML | Added fallback to html.parser |
+| **No Logging** | Unable to track errors | Added logging configuration |
+
+### 🟢 Low Priority (Fixed)
+
+| Issue | Description | Fix |
+|-------|-------------|-----|
+| **Magic Numbers** | Thresholds scattered throughout code | Extracted to class constants |
+| **Animation Delay Accumulation** | Too long delay with many items | Max delay capped at 1 second |
+| **Inconsistent Ports** | Different default ports in different files | Unified to 8080 |
+
+---
+
 ## Technical Limitations
 
 This is a **single-page crawler** with the following limitations:
@@ -120,7 +160,7 @@ This is a **single-page crawler** with the following limitations:
 | **No Behavioral Signals** | CTR, Dwell Time, Bounce Rate are Google's internal data |
 | **No Backlink Analysis** | Requires third-party APIs (Ahrefs, Moz, etc.) |
 | **No Ranking Data** | Requires Google Search Console access |
-| **15s Timeout** | Slow-responding sites will be marked as connection failure |
+| **8s Timeout** | Slow-responding sites will be marked as connection failure |
 
 **What this tool CAN do**: Check HTML-based SEO fundamentals (tags, structured data, social sharing)
 

@@ -1,6 +1,9 @@
 """SEO Roaster - Flask 應用程式"""
 
+import logging
 import os
+from functools import wraps
+from time import time
 
 from flask import Flask, jsonify, render_template, request
 
@@ -11,6 +14,55 @@ from .roasts import (
     get_grade_roast,
     get_roast,
 )
+
+# 設定日誌
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s: %(message)s [%(name)s:%(lineno)d]'
+)
+logger = logging.getLogger(__name__)
+
+# 簡易速率限制器（記憶體版）
+RATE_LIMIT_STORE: dict[str, list[float]] = {}
+
+
+def rate_limit(max_requests: int = 10, window: int = 60):
+    """
+    速率限制裝飾器
+
+    Args:
+        max_requests: 時間窗口內最大請求數
+        window: 時間窗口（秒）
+    """
+    def decorator(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            # 取得客戶端 IP（考慮反向代理）
+            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            if ip:
+                ip = ip.split(',')[0].strip()  # 取第一個 IP
+
+            now = time()
+
+            # 清理過期記錄
+            if ip in RATE_LIMIT_STORE:
+                RATE_LIMIT_STORE[ip] = [t for t in RATE_LIMIT_STORE[ip] if now - t < window]
+            else:
+                RATE_LIMIT_STORE[ip] = []
+
+            # 檢查是否超過限制
+            if len(RATE_LIMIT_STORE[ip]) >= max_requests:
+                logger.warning(f"Rate limit exceeded for IP: {ip}")
+                return jsonify({
+                    "error": True,
+                    "message": "請求太頻繁了，休息一下吧！",
+                    "roast": "你是機器人嗎？連喘口氣都不會？",
+                }), 429
+
+            RATE_LIMIT_STORE[ip].append(now)
+            return f(*args, **kwargs)
+        return wrapped
+    return decorator
 
 app = Flask(
     __name__,
@@ -26,10 +78,19 @@ def index():
 
 
 @app.route("/analyze", methods=["POST"])
+@rate_limit(max_requests=10, window=60)  # 每分鐘最多 10 次分析
 def analyze():
     """分析 SEO"""
     data = request.get_json()
     url = data.get("url", "").strip()
+
+    # 驗證 URL 長度
+    if len(url) > 2048:
+        return jsonify({
+            "error": True,
+            "message": "網址太長了，你是在貼論文嗎？",
+            "roast": "連網址都這麼長，你的人生是不是也很複雜？",
+        }), 400
 
     if not url:
         return jsonify({
@@ -37,8 +98,8 @@ def analyze():
             "message": "請輸入網址，不要讓我猜。",
         }), 400
 
-    # 執行分析
-    analyzer = SEOAnalyzer(timeout=15)
+    # 執行分析（timeout 8 秒較合理）
+    analyzer = SEOAnalyzer(timeout=8)
     result = analyzer.analyze(url)
 
     # 處理錯誤
@@ -105,11 +166,6 @@ def health():
     return jsonify({"status": "ok", "message": "SEO Roaster is alive and roasting!"})
 
 
-def create_app():
-    """工廠函數，用於 Gunicorn"""
-    return app
-
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port, debug=True)

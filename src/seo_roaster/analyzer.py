@@ -1,15 +1,30 @@
 """SEO 分析器 - 解析網頁 HTML 並檢測 SEO 元素"""
 
+import ipaddress
 import json
+import logging
 import re
+import socket
 from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
 
+# 設定日誌
+logger = logging.getLogger(__name__)
+
 
 class SEOAnalyzer:
     """SEO 分析器"""
+
+    # SEO 閾值常數
+    TITLE_MIN_LENGTH = 10
+    TITLE_MAX_LENGTH = 70
+    META_DESC_MIN_LENGTH = 50
+    META_DESC_MAX_LENGTH = 160
+    IMAGE_ALT_LOW_THRESHOLD = 0.5
+    IMAGE_ALT_MEDIUM_THRESHOLD = 0.8
+    MAX_REDIRECTS = 5
 
     # 各項目的權重（總和 = 100）
     WEIGHTS = {
@@ -41,25 +56,123 @@ class SEOAnalyzer:
             "User-Agent": "Mozilla/5.0 (compatible; SEORoaster/1.0; +https://github.com/tznthou/seo-roaster)"
         }
 
-    def fetch_html(self, url: str) -> tuple[str, str, int]:
+    def _is_safe_ip(self, ip_str: str) -> bool:
         """
-        抓取網頁 HTML
+        檢查 IP 是否安全（非內部網路）
+
+        Args:
+            ip_str: IP 位址字串
 
         Returns:
-            tuple: (html, final_url, status_code)
+            bool: True 表示安全，False 表示危險
         """
+        try:
+            ip = ipaddress.ip_address(ip_str)
+            # 阻擋私有網路、本地迴環、保留 IP、連結本地
+            if ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_link_local:
+                return False
+            # 阻擋 AWS/GCP metadata endpoint
+            if ip_str.startswith("169.254."):
+                return False
+            return True
+        except ValueError:
+            return False
+
+    def _validate_url(self, url: str, redirect_count: int = 0) -> str:
+        """
+        驗證 URL 安全性（SSRF 防護）
+
+        Args:
+            url: 要驗證的 URL
+            redirect_count: 重定向計數（防止無限迴圈）
+
+        Returns:
+            str: 驗證後的 URL
+
+        Raises:
+            ValueError: URL 不安全或無效
+        """
+        if redirect_count > self.MAX_REDIRECTS:
+            raise ValueError("重定向次數過多")
+
         # 確保 URL 有 scheme
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
 
+        parsed = urlparse(url)
+
+        # 只允許 http/https
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("只支援 HTTP/HTTPS 協定")
+
+        hostname = parsed.hostname
+        if not hostname:
+            raise ValueError("無效的網址")
+
+        # 阻擋 file:// 等協定
+        if parsed.scheme == "file":
+            raise ValueError("不支援本地檔案存取")
+
+        # 檢查是否為 IP 位址
+        try:
+            ip = ipaddress.ip_address(hostname)
+            if not self._is_safe_ip(str(ip)):
+                raise ValueError("不允許存取內部網路位址")
+        except ValueError:
+            # 不是 IP，是域名，進行 DNS 解析檢查
+            try:
+                resolved_ip = socket.gethostbyname(hostname)
+                if not self._is_safe_ip(resolved_ip):
+                    raise ValueError("域名解析到內部網路位址，已阻擋")
+            except socket.gaierror:
+                raise ValueError("無法解析域名")
+
+        return url
+
+    def fetch_html(self, url: str) -> tuple[str, str, int]:
+        """
+        抓取網頁 HTML（含 SSRF 防護）
+
+        Returns:
+            tuple: (html, final_url, status_code)
+
+        Raises:
+            ValueError: URL 不安全
+            requests.exceptions.*: 網路相關錯誤
+        """
+        # SSRF 防護：驗證 URL
+        url = self._validate_url(url)
+
+        # 先不自動重定向，手動檢查每個重定向目標
         response = requests.get(
             url,
             headers=self.headers,
             timeout=self.timeout,
-            allow_redirects=True,
+            allow_redirects=False,
         )
-        response.raise_for_status()
 
+        # 處理重定向
+        redirect_count = 0
+        while response.status_code in (301, 302, 303, 307, 308):
+            redirect_count += 1
+            if redirect_count > 5:
+                raise ValueError("重定向次數過多")
+
+            redirect_url = response.headers.get("Location")
+            if not redirect_url:
+                break
+
+            # 驗證重定向目標
+            redirect_url = self._validate_url(redirect_url, redirect_count)
+
+            response = requests.get(
+                redirect_url,
+                headers=self.headers,
+                timeout=self.timeout,
+                allow_redirects=False,
+            )
+
+        response.raise_for_status()
         return response.text, response.url, response.status_code
 
     def analyze(self, url: str) -> dict:
@@ -71,6 +184,9 @@ class SEOAnalyzer:
         """
         try:
             html, final_url, status_code = self.fetch_html(url)
+        except ValueError as e:
+            # SSRF 防護或 URL 驗證錯誤
+            return {"error": "invalid_url", "message": str(e)}
         except requests.exceptions.Timeout:
             return {"error": "timeout", "message": "網站回應太慢，可能在睡覺"}
         except requests.exceptions.SSLError:
@@ -78,11 +194,21 @@ class SEOAnalyzer:
         except requests.exceptions.ConnectionError:
             return {"error": "connection_error", "message": "連不上網站，確定網址沒打錯？"}
         except requests.exceptions.HTTPError as e:
-            return {"error": "http_error", "message": f"HTTP 錯誤：{e.response.status_code}"}
+            # 不洩露完整錯誤，只回傳狀態碼
+            status_code = e.response.status_code if e.response else "未知"
+            return {"error": "http_error", "message": f"HTTP 錯誤：{status_code}"}
         except Exception as e:
-            return {"error": "unknown", "message": str(e)}
+            # 記錄完整錯誤到日誌，但只回傳通用訊息給使用者
+            logger.error(f"Unexpected error analyzing {url}: {str(e)}", exc_info=True)
+            return {"error": "unknown", "message": "發生未知錯誤，請稍後再試"}
 
-        soup = BeautifulSoup(html, "lxml")
+        # HTML 解析（lxml 失敗時改用 html.parser）
+        try:
+            soup = BeautifulSoup(html, "lxml")
+        except Exception as e:
+            logger.warning(f"lxml parser failed, falling back to html.parser: {e}")
+            soup = BeautifulSoup(html, "html.parser")
+
         parsed_url = urlparse(final_url)
 
         # 執行所有檢測
@@ -174,14 +300,14 @@ class SEOAnalyzer:
                 "message": "empty",
                 "value": "",
             }
-        elif length < 10:
+        elif length < self.TITLE_MIN_LENGTH:
             return {
                 "passed": False,
                 "message": "too_short",
                 "value": title_text,
                 "length": length,
             }
-        elif length > 70:
+        elif length > self.TITLE_MAX_LENGTH:
             return {
                 "passed": False,
                 "message": "too_long",
@@ -214,14 +340,14 @@ class SEOAnalyzer:
                 "message": "empty",
                 "value": "",
             }
-        elif length < 50:
+        elif length < self.META_DESC_MIN_LENGTH:
             return {
                 "passed": False,
                 "message": "too_short",
                 "value": content,
                 "length": length,
             }
-        elif length > 160:
+        elif length > self.META_DESC_MAX_LENGTH:
             return {
                 "passed": False,
                 "message": "too_long",
@@ -410,7 +536,7 @@ class SEOAnalyzer:
         with_alt = sum(1 for img in images if img.get("alt", "").strip())
         ratio = with_alt / total if total > 0 else 0
 
-        if ratio < 0.5:
+        if ratio < self.IMAGE_ALT_LOW_THRESHOLD:
             return {
                 "passed": False,
                 "message": "low_ratio",
@@ -419,7 +545,7 @@ class SEOAnalyzer:
                 "with_alt": with_alt,
                 "ratio": ratio,
             }
-        elif ratio < 0.8:
+        elif ratio < self.IMAGE_ALT_MEDIUM_THRESHOLD:
             return {
                 "passed": False,
                 "message": "medium_ratio",

@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Code review reports
+CODE_REVIEW*.md
+
+# Claude Code settings
+.claude/

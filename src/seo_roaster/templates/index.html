@@ -38,6 +38,7 @@
                         placeholder="輸入網址，例如：example.com"
                         autocomplete="off"
                         spellcheck="false"
+                        maxlength="2048"
                     >
                     <button type="submit" id="submit-btn" class="btn-submit">
                         <span class="btn-text">開始診斷 ♪</span>
@@ -144,12 +145,25 @@
         const resultSection = document.getElementById('result-section');
         const errorSection = document.getElementById('error-section');
 
+        // 簡單的 URL 格式驗證
+        function isValidUrl(url) {
+            // 允許不含 protocol 的網址（後端會自動加上 https://）
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.\-\?\=\&\%\#]*)*\/?$/i;
+            return urlPattern.test(url);
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const url = urlInput.value.trim();
             if (!url) {
                 showError('請輸入網址', '空白的輸入框是在考驗我的耐心嗎？');
+                return;
+            }
+
+            // 前端 URL 格式驗證
+            if (!isValidUrl(url)) {
+                showError('網址格式錯誤', '這看起來不像網址欸...確定沒打錯嗎？');
                 return;
             }
 
@@ -243,14 +257,16 @@
         function createIssueElement(issue, index) {
             const div = document.createElement('div');
             div.className = 'issue-item';
-            div.style.animationDelay = `${index * 0.1}s`;
+            // 動畫延遲最多 1 秒，避免過長等待
+            div.style.animationDelay = `${Math.min(index * 0.1, 1)}s`;
 
+            // XSS 防護：所有動態內容都經過跳脫
             div.innerHTML = `
                 <div class="issue-header">
-                    <span class="issue-name">${issue.name}</span>
-                    <span class="issue-weight">-${issue.weight} 分</span>
+                    <span class="issue-name">${escapeHTML(issue.name)}</span>
+                    <span class="issue-weight">-${escapeHTML(issue.weight)} 分</span>
                 </div>
-                <div class="issue-roast">${issue.roast}</div>
+                <div class="issue-roast">${escapeHTML(issue.roast)}</div>
                 ${issue.value ? `<div class="issue-value">目前值：${formatValue(issue.value)}</div>` : ''}
             `;
 
@@ -261,23 +277,32 @@
             const div = document.createElement('div');
             div.className = 'passed-item';
 
+            // XSS 防護：所有動態內容都經過跳脫
             div.innerHTML = `
                 <span class="passed-icon"></span>
-                <span class="passed-name">${item.name}</span>
+                <span class="passed-name">${escapeHTML(item.name)}</span>
                 ${item.value && item.value !== 'no_images' ? `<span class="passed-value">${formatValue(item.value)}</span>` : ''}
             `;
 
             return div;
         }
 
-        function formatValue(value) {
+        // XSS 防護：跳脫 HTML 特殊字元
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        }
+
+        function formatValue(value, maxLength = 60) {
             if (Array.isArray(value)) {
-                return value.join(', ');
+                return escapeHTML(value.join(', '));
             }
-            if (typeof value === 'string' && value.length > 60) {
-                return value.substring(0, 60) + '...';
+            if (typeof value === 'string' && value.length > maxLength) {
+                return escapeHTML(value.substring(0, maxLength) + '...');
             }
-            return value;
+            return escapeHTML(value);
         }
 
         function animateNumber(element, start, end, duration) {
