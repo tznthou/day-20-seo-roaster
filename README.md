@@ -315,14 +315,6 @@ Google 從來沒有公開說過這些數字。我們只是發現「好像這樣�
 3. 一堆 `if-else` 判斷
 4. 一堆毒舌字串
 
-沒有 AI、沒有機器學習、沒有區塊鏈。只有最基本的 Python 和最毒的文案。
-
-想加更多檢測？改 `analyzer.py`。
-想加更多吐槽？改 `roasts.py`。
-想換顏色？改 `style.css`。
-
-**Fork it. Roast it. Make it yours.**
-
 ---
 
 ## 授權

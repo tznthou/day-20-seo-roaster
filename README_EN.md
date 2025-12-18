@@ -317,12 +317,6 @@ The core of this project is simple:
 
 No AI, no machine learning, no blockchain. Just basic Python and maximum roast.
 
-Want more checks? Edit `analyzer.py`.
-Want more roasts? Edit `roasts.py`.
-Want different colors? Edit `style.css`.
-
-**Fork it. Roast it. Make it yours.**
-
 ---
 
 ## License
