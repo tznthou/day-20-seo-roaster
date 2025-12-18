@@ -146,6 +146,16 @@ This project has been patched for the following security issues and is safe for 
 | **Animation Delay Accumulation** | Too long delay with many items | Max delay capped at 1 second |
 | **Inconsistent Ports** | Different default ports in different files | Unified to 8080 |
 
+### 🔵 Future Improvements
+
+| Item | Description | Priority |
+|------|-------------|----------|
+| HTTP Security Headers | Add CSP, X-Frame-Options, HSTS | High |
+| HTML Size Limit | Prevent memory issues from huge HTML | High |
+| Redis Rate Limiter | Memory-based limiter doesn't scale across workers | Medium |
+| ProxyFix | Properly handle X-Forwarded-For | Medium |
+| CORS Settings | Needed for future API usage | Low |
+
 ---
 
 ## Technical Limitations

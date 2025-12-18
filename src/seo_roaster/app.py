@@ -2,6 +2,8 @@
 
 import logging
 import os
+import threading
+from collections import defaultdict
 from functools import wraps
 from time import time
 
@@ -22,8 +24,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# 簡易速率限制器（記憶體版）
-RATE_LIMIT_STORE: dict[str, list[float]] = {}
+# 簡易速率限制器（記憶體版，執行緒安全）
+RATE_LIMIT_STORE: dict[str, list[float]] = defaultdict(list)
+RATE_LIMIT_LOCK = threading.Lock()
 
 
 def rate_limit(max_requests: int = 10, window: int = 60):
@@ -44,22 +47,24 @@ def rate_limit(max_requests: int = 10, window: int = 60):
 
             now = time()
 
-            # 清理過期記錄
-            if ip in RATE_LIMIT_STORE:
-                RATE_LIMIT_STORE[ip] = [t for t in RATE_LIMIT_STORE[ip] if now - t < window]
-            else:
-                RATE_LIMIT_STORE[ip] = []
+            # 使用鎖確保執行緒安全
+            with RATE_LIMIT_LOCK:
+                # 過濾掉過期的時間戳（defaultdict 自動初始化空列表）
+                RATE_LIMIT_STORE[ip] = [
+                    t for t in RATE_LIMIT_STORE[ip] if now - t < window
+                ]
 
-            # 檢查是否超過限制
-            if len(RATE_LIMIT_STORE[ip]) >= max_requests:
-                logger.warning(f"Rate limit exceeded for IP: {ip}")
-                return jsonify({
-                    "error": True,
-                    "message": "請求太頻繁了，休息一下吧！",
-                    "roast": "你是機器人嗎？連喘口氣都不會？",
-                }), 429
+                # 檢查是否超過限制
+                if len(RATE_LIMIT_STORE[ip]) >= max_requests:
+                    logger.warning(f"Rate limit exceeded for IP: {ip}")
+                    return jsonify({
+                        "error": True,
+                        "message": "請求太頻繁了，休息一下吧！",
+                        "roast": "你是機器人嗎？連喘口氣都不會？",
+                    }), 429
 
-            RATE_LIMIT_STORE[ip].append(now)
+                RATE_LIMIT_STORE[ip].append(now)
+
             return f(*args, **kwargs)
         return wrapped
     return decorator
@@ -81,7 +86,7 @@ def index():
 @rate_limit(max_requests=10, window=60)  # 每分鐘最多 10 次分析
 def analyze():
     """分析 SEO"""
-    data = request.get_json()
+    data = request.get_json() or {}
     url = data.get("url", "").strip()
 
     # 驗證 URL 長度

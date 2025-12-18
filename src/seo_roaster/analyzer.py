@@ -5,7 +5,7 @@ import json
 import logging
 import re
 import socket
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -153,17 +153,22 @@ class SEOAnalyzer:
 
         # 處理重定向
         redirect_count = 0
+        current_url = url
         while response.status_code in (301, 302, 303, 307, 308):
             redirect_count += 1
-            if redirect_count > 5:
+            if redirect_count > self.MAX_REDIRECTS:
                 raise ValueError("重定向次數過多")
 
             redirect_url = response.headers.get("Location")
             if not redirect_url:
                 break
 
+            # 處理相對路徑重定向（如 "/path" 或 "../page"）
+            redirect_url = urljoin(current_url, redirect_url)
+
             # 驗證重定向目標
             redirect_url = self._validate_url(redirect_url, redirect_count)
+            current_url = redirect_url
 
             response = requests.get(
                 redirect_url,
@@ -284,14 +289,15 @@ class SEOAnalyzer:
     def _check_title(self, soup: BeautifulSoup) -> dict:
         """檢查 title 標籤"""
         title = soup.find("title")
-        if not title or not title.string:
+        if not title:
             return {
                 "passed": False,
                 "message": "missing",
                 "value": None,
             }
 
-        title_text = title.string.strip()
+        # 使用 get_text() 而非 .string，避免 title 有子元素時回傳 None
+        title_text = title.get_text(strip=True)
         length = len(title_text)
 
         if length == 0:
