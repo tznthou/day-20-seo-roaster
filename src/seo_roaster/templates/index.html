@@ -7,15 +7,43 @@
     <meta name="description" content="輸入網址，獲得激烈毒舌的 SEO 分析報告。讓你的網站在被吐槽中進步。">
     <link rel="canonical" href="https://seo-roaster.zeabur.app/">
 
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍬</text></svg>">
+
     <!-- Open Graph -->
     <meta property="og:title" content="SEO Roaster - SEO 吐槽器">
     <meta property="og:description" content="輸入網址，獲得激烈毒舌的 SEO 分析報告">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://seo-roaster.zeabur.app/">
+    <meta property="og:image" content="https://seo-roaster.zeabur.app/static/og-image.webp">
+    <meta property="og:locale" content="zh_TW">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SEO Roaster - SEO 吐槽器">
+    <meta name="twitter:description" content="輸入網址，獲得激烈毒舌的 SEO 分析報告">
+    <meta name="twitter:image" content="https://seo-roaster.zeabur.app/static/og-image.webp">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "SEO Roaster",
+        "alternateName": "SEO 吐槽器",
+        "description": "輸入網址，獲得激烈毒舌的 SEO 分析報告。讓你的網站在被吐槽中進步。",
+        "url": "https://seo-roaster.zeabur.app/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='v1-candy-clay.css') }}">
 </head>
 <body>
     <div class="container">
@@ -325,6 +353,7 @@
 
             requestAnimationFrame(update);
         }
+
     </script>
 </body>
 </html>

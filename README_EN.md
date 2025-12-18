@@ -8,7 +8,7 @@
 
 Enter a URL, get a brutally honest SEO analysis report. Improve your website through savage roasts.
 
-![SEO Roaster Demo](assets/demo.png)
+![SEO Roaster Demo](assets/demo.webp)
 
 > **Warning**
 > The roasts are for entertainment, but the SEO advice is real.
@@ -20,7 +20,7 @@ Enter a URL, get a brutally honest SEO analysis report. Improve your website thr
 - **20 SEO Checks**: Covers fundamentals, social, structured data, and more
 - **Savage Tsundere Roasts**: Each issue comes with brutal + tsundere style commentary
 - **Grade System**: S/A/B/C/F ratings with overall assessment
-- **Contrast Cute UI**: Cute pink appearance × savage tsundere content (gap moe)
+- **Candy Clay UI**: Claymorphism style with bouncy 3D clay visuals
 - **Zero Frontend Dependencies**: Pure HTML/CSS/JS, no npm required
 
 ---
@@ -232,7 +232,7 @@ day-20-seo-roaster/
 │       ├── templates/
 │       │   └── index.html      # Frontend page
 │       └── static/
-│           └── style.css       # Cute pink theme styles
+│           └── v1-candy-clay.css  # Candy clay theme styles
 ├── pyproject.toml
 ├── Procfile                    # Gunicorn config
 ├── README.md
@@ -285,14 +285,15 @@ ROASTS = {
 
 ### Modifying UI Style
 
-Edit CSS variables in `static/style.css`:
+Edit CSS variables in `static/v1-candy-clay.css`:
 
 ```css
 :root {
-    --bg-cream: #fff5f8;         /* Cream pink background */
-    --accent-pink: #ff6b9d;      /* Primary pink accent */
-    --accent-coral: #ff8fab;     /* Coral pink */
-    --success-mint: #7dd3a8;     /* Passed items mint green */
+    --bg-primary: #fff0f5;       /* Strawberry milk background */
+    --candy-pink: #ff7eb3;       /* Strawberry candy */
+    --candy-mint: #7ee8c7;       /* Mint candy */
+    --candy-coral: #ff9a8b;      /* Coral candy */
+    --shadow-clay: ...;          /* 3D clay shadow */
     /* ... */
 }
 ```

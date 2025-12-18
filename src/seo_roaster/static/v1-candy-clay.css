@@ -1,0 +1,583 @@
+/*
+ * SEO Roaster - Candy Clay Edition 🍬
+ * UX-Genis v2.0 Generated
+ *
+ * Philosophy Mix: Claymorphism 80% + Aurora 20%
+ * Vector: saturation=88, warmth=82, density=35, organic=18
+ *         depth=92, noise=5, radius=48px, contrast=42, motion=50
+ *
+ * 設計概念：軟糖 Q 彈感，像可以捏的 3D 黏土
+ */
+
+/* ===== Reset & Base ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== Utility Classes ===== */
+.hidden {
+    display: none !important;
+}
+
+.result-section,
+.error-section {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+:root {
+    /* 🍬 Candy Clay Color Palette - 超高飽和糖果色 */
+    --bg-primary: #fff0f5;          /* 草莓牛奶 */
+    --bg-secondary: #fffaf0;        /* 奶油底 */
+    --bg-card: #ffffff;
+    --bg-card-hover: #fff5fa;
+
+    --text-primary: #5a4a5c;        /* 巧克力灰 */
+    --text-secondary: #8b7a8c;
+    --text-muted: #b5a3b7;
+
+    /* 🎨 超甜糖果色 */
+    --candy-pink: #ff7eb3;          /* 草莓軟糖 */
+    --candy-pink-dark: #ff5c9e;
+    --candy-pink-light: #ffc4dc;
+    --candy-peach: #ffb5a7;         /* 水蜜桃 */
+    --candy-lavender: #c9b1ff;      /* 薰衣草 */
+    --candy-mint: #7ee8c7;          /* 薄荷 */
+    --candy-lemon: #ffe66d;         /* 檸檬 */
+    --candy-coral: #ff9a8b;         /* 珊瑚 */
+
+    /* 等級糖果色 */
+    --grade-s: #7ee8c7;
+    --grade-a: #a8f0d4;
+    --grade-b: #ffe66d;
+    --grade-c: #ffb380;
+    --grade-f: #ff8a8a;
+
+    /* 🧈 Clay Shadows - 黏土立體感的靈魂 */
+    --shadow-clay:
+        0 10px 30px rgba(255, 126, 179, 0.25),
+        0 4px 10px rgba(0, 0, 0, 0.08),
+        inset 3px 3px 8px rgba(255, 255, 255, 0.6),
+        inset -2px -2px 6px rgba(255, 126, 179, 0.15);
+
+    --shadow-clay-hover:
+        0 15px 40px rgba(255, 126, 179, 0.35),
+        0 8px 20px rgba(0, 0, 0, 0.1),
+        inset 4px 4px 10px rgba(255, 255, 255, 0.7),
+        inset -3px -3px 8px rgba(255, 126, 179, 0.2);
+
+    --shadow-clay-pressed:
+        0 4px 12px rgba(255, 126, 179, 0.2),
+        0 2px 6px rgba(0, 0, 0, 0.06),
+        inset 2px 2px 6px rgba(255, 126, 179, 0.2),
+        inset -1px -1px 4px rgba(255, 255, 255, 0.4);
+
+    /* Spacing */
+    --container-max: 820px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+
+    /* 🫧 超圓潤圓角 */
+    --radius-sm: 16px;
+    --radius-md: 28px;
+    --radius-lg: 40px;
+    --radius-xl: 48px;
+    --radius-full: 50%;
+
+    /* 🎢 彈跳動畫 */
+    --transition-fast: 0.2s ease;
+    --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-clay: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 196, 220, 0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(201, 177, 255, 0.3) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    color: var(--text-primary);
+    line-height: 1.7;
+    min-height: 100vh;
+}
+
+/* ===== Container ===== */
+.container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== Header - 軟糖標題 ===== */
+.header {
+    text-align: center;
+    padding: var(--spacing-xl) 0;
+}
+
+.title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+    text-shadow: 2px 2px 0 rgba(255, 126, 179, 0.2);
+}
+
+.title .cute {
+    color: var(--candy-pink);
+    position: relative;
+    display: inline-block;
+}
+
+.title .cute::after {
+    content: ' 🍬';
+    font-size: 0.7em;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    font-weight: 500;
+}
+
+.subtitle::before { content: '🫧 '; }
+.subtitle::after { content: ' 🫧'; }
+
+/* ===== Input Section - Q彈輸入框 ===== */
+.input-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.input-wrapper {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+#url-input {
+    flex: 1;
+    min-width: 260px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1.1rem;
+    background: var(--bg-card);
+    border: 3px solid var(--candy-pink-light);
+    border-radius: var(--radius-xl);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-clay);
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-clay),
+        transform var(--transition-bounce);
+}
+
+#url-input:focus {
+    outline: none;
+    border-color: var(--candy-pink);
+    box-shadow: var(--shadow-clay-hover);
+    transform: scale(1.01);
+}
+
+#url-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* 🍭 超 Q 彈按鈕 */
+.btn-submit {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: 1.15rem;
+    font-weight: 700;
+    background: linear-gradient(145deg, var(--candy-pink), var(--candy-peach));
+    color: white;
+    border: none;
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    box-shadow: var(--shadow-clay);
+    transition:
+        transform var(--transition-bounce),
+        box-shadow var(--transition-clay);
+    position: relative;
+    overflow: hidden;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-submit::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 10%;
+    right: 10%;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.5), transparent);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.btn-submit:hover:not(:disabled) {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: var(--shadow-clay-hover);
+}
+
+.btn-submit:active:not(:disabled) {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: var(--shadow-clay-pressed);
+}
+
+.btn-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-submit .btn-loading { display: none; }
+.btn-submit.loading .btn-text { display: none; }
+.btn-submit.loading .btn-loading { display: inline; }
+
+/* ===== Score Card - 黏土分數卡 ===== */
+.score-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-clay);
+    position: relative;
+    overflow: hidden;
+}
+
+.score-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg,
+        var(--candy-pink),
+        var(--candy-peach),
+        var(--candy-lemon),
+        var(--candy-mint),
+        var(--candy-lavender));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.score-circle {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 160px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(145deg, #fff, var(--bg-primary));
+    border: 5px solid var(--candy-pink);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-clay);
+}
+
+.score-value {
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--candy-pink);
+    text-shadow: 2px 2px 0 rgba(255, 126, 179, 0.2);
+}
+
+.score-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* 等級徽章 - 糖果風 */
+.grade-badge {
+    display: inline-block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-clay);
+}
+
+.grade-s {
+    background: linear-gradient(145deg, var(--grade-s), #a8f0d4);
+    color: #1a5c47;
+}
+.grade-s::after { content: ' 🌟'; }
+
+.grade-a {
+    background: linear-gradient(145deg, var(--grade-a), #c6f6d5);
+    color: #276749;
+}
+
+.grade-b {
+    background: linear-gradient(145deg, var(--grade-b), #fff3a0);
+    color: #8b6914;
+}
+
+.grade-c {
+    background: linear-gradient(145deg, var(--grade-c), #ffd0a0);
+    color: #8b4513;
+}
+
+.grade-f {
+    background: linear-gradient(145deg, var(--grade-f), #ffb3b3);
+    color: #8b2c2c;
+}
+.grade-f::after { content: ' 💔'; }
+
+.grade-roast {
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    font-style: italic;
+    padding: var(--spacing-md);
+    background: rgba(255, 126, 179, 0.1);
+    border-radius: var(--radius-md);
+    border-left: 5px solid var(--candy-pink);
+    box-shadow: inset 2px 2px 8px rgba(255, 255, 255, 0.5);
+}
+
+/* ===== Issues - 軟糖問題卡 ===== */
+.issue-item {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-clay);
+    margin-bottom: var(--spacing-sm);
+    transition: transform var(--transition-bounce), box-shadow var(--transition-clay);
+}
+
+.issue-item:hover {
+    transform: translateX(8px);
+    box-shadow: var(--shadow-clay-hover);
+}
+
+.issue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xs);
+}
+
+.issue-name {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.issue-weight {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--candy-coral);
+    background: rgba(255, 154, 139, 0.2);
+    padding: 4px 12px;
+    border-radius: var(--radius-md);
+    box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+.issue-roast {
+    color: var(--candy-pink-dark);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    background: rgba(255, 126, 179, 0.08);
+    border-radius: var(--radius-sm);
+}
+
+/* ===== Passed Items - 通過的糖果 ===== */
+.passed-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border: 3px solid var(--candy-mint);
+    box-shadow: var(--shadow-clay);
+    transition: transform var(--transition-bounce);
+}
+
+.passed-item:hover {
+    transform: scale(1.05);
+}
+
+.passed-icon::before {
+    content: '🍀';
+}
+
+/* ===== Limitations - 軟糖說明區 ===== */
+.limitations {
+    margin-top: var(--spacing-lg);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 3px solid var(--candy-pink-light);
+    box-shadow: var(--shadow-clay);
+}
+
+.limitations-toggle {
+    padding: var(--spacing-md);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: color var(--transition-fast);
+}
+
+.limitations-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.limitations-toggle::before {
+    content: '🍭';
+    font-size: 1.1em;
+}
+
+.limitations[open] .limitations-toggle::before {
+    content: '🍬';
+}
+
+.limitations-toggle:hover {
+    color: var(--candy-pink);
+}
+
+.limitations-content {
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.limitations-can,
+.limitations-cannot {
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.5);
+}
+
+.limitations-can {
+    background: rgba(126, 232, 199, 0.15);
+    border-left: 4px solid var(--candy-mint);
+}
+
+.limitations-cannot {
+    background: rgba(255, 154, 139, 0.15);
+    border-left: 4px solid var(--candy-coral);
+}
+
+.limitations-can h4 {
+    color: #3cb88c;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.limitations-can h4::before {
+    content: '✓ ';
+}
+
+.limitations-cannot h4 {
+    color: var(--candy-coral);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.limitations-cannot h4::before {
+    content: '✗ ';
+}
+
+.limitations ul {
+    list-style: none;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.limitations li {
+    padding-left: 1.4rem;
+    position: relative;
+}
+
+.limitations-can li::before {
+    content: '♡';
+    position: absolute;
+    left: 0;
+    color: var(--candy-mint);
+    font-size: 0.9em;
+}
+
+.limitations-cannot li::before {
+    content: '×';
+    position: absolute;
+    left: 0;
+    color: var(--candy-coral);
+    font-weight: bold;
+}
+
+/* ===== Footer ===== */
+.footer {
+    margin-top: auto;
+    padding-top: var(--spacing-xl);
+    text-align: center;
+}
+
+.disclaimer {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    padding: var(--spacing-md);
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-clay);
+}
+
+.disclaimer::before { content: '🍬 '; }
+.disclaimer::after { content: ' 🍭'; }
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+    .title { font-size: 2rem; }
+    .score-circle { width: 130px; height: 130px; }
+    .score-value { font-size: 2.8rem; }
+    .input-wrapper { flex-direction: column; }
+    .btn-submit { width: 100%; }
+    .limitations-content { grid-template-columns: 1fr; }
+}
+
+/* ===== Cute Scrollbar ===== */
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--candy-pink-light), var(--candy-lavender));
+    border-radius: 6px;
+    border: 2px solid var(--bg-primary);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--candy-pink), var(--candy-peach));
+}

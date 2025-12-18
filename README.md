@@ -8,7 +8,7 @@
 
 輸入網址，獲得激烈毒舌的 SEO 分析報告。讓你的網站在被吐槽中進步。
 
-![SEO Roaster Demo](assets/demo.png)
+![SEO Roaster Demo](assets/demo.webp)
 
 > **Warning**
 > 本工具的吐槽內容純屬娛樂，但 SEO 建議是認真的。
@@ -20,7 +20,7 @@
 - **20 項 SEO 檢測**：涵蓋基礎、社交、結構化資料等面向
 - **毒舌傲嬌吐槽**：每個問題都附帶隨機抽取的毒舌+傲嬌評論
 - **等級評分系統**：S/A/B/C/F 五級評分，附等級總評
-- **反差萌 UI**：可愛粉紅外表 × 毒舌傲嬌內容的反差感
+- **軟糖黏土 UI**：Claymorphism 風格，Q 彈立體的 3D 黏土視覺
 - **零依賴前端**：純 HTML/CSS/JS，無需 npm
 
 ---
@@ -232,7 +232,7 @@ day-20-seo-roaster/
 │       ├── templates/
 │       │   └── index.html      # 前端頁面
 │       └── static/
-│           └── style.css       # 可愛粉紅風格樣式
+│           └── v1-candy-clay.css  # 軟糖黏土風格樣式
 ├── pyproject.toml
 ├── Procfile                    # Gunicorn 啟動設定
 ├── README.md
@@ -285,14 +285,15 @@ ROASTS = {
 
 ### 修改 UI 風格
 
-編輯 `static/style.css` 中的 CSS 變數：
+編輯 `static/v1-candy-clay.css` 中的 CSS 變數：
 
 ```css
 :root {
-    --bg-cream: #fff5f8;         /* 奶油粉背景 */
-    --accent-pink: #ff6b9d;      /* 主色調粉紅 */
-    --accent-coral: #ff8fab;     /* 珊瑚粉 */
-    --success-mint: #7dd3a8;     /* 通過項目薄荷綠 */
+    --bg-primary: #fff0f5;       /* 草莓牛奶背景 */
+    --candy-pink: #ff7eb3;       /* 草莓軟糖 */
+    --candy-mint: #7ee8c7;       /* 薄荷糖 */
+    --candy-coral: #ff9a8b;      /* 珊瑚糖 */
+    --shadow-clay: ...;          /* 黏土立體陰影 */
     /* ... */
 }
 ```
