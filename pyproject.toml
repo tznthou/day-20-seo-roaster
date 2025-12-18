@@ -1,0 +1,20 @@
+[project]
+name = "seo-roaster"
+version = "0.1.0"
+description = "SEO \u5410\u69fd\u5668 - \u8f38\u5165\u7db2\u5740\uff0c\u7372\u5f97\u6fc0\u70c8\u6bd2\u820c\u7684 SEO \u5206\u6790\u5831\u544a"
+readme = "README.md"
+authors = [
+    { name = "tznthou", email = "tznthou@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "flask>=3.1.2",
+    "gunicorn>=23.0.0",
+    "lxml>=6.0.2",
+    "requests>=2.32.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Roaster - SEO 吐槽器</title>
+    <meta name="description" content="輸入網址，獲得激烈毒舌的 SEO 分析報告。讓你的網站在被吐槽中進步。">
+    <link rel="canonical" href="https://seo-roaster.zeabur.app/">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SEO Roaster - SEO 吐槽器">
+    <meta property="og:description" content="輸入網址，獲得激烈毒舌的 SEO 分析報告">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">
+                <span class="cute">SEO</span> 健檢小幫手
+            </h1>
+            <p class="subtitle">讓我來幫你看看網站有多棒～</p>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <form id="analyze-form" class="form">
+                <div class="input-wrapper">
+                    <input
+                        type="text"
+                        id="url-input"
+                        name="url"
+                        placeholder="輸入網址，例如：example.com"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button type="submit" id="submit-btn" class="btn-submit">
+                        <span class="btn-text">開始診斷 ♪</span>
+                        <span class="btn-loading">努力檢查中...</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Limitations Notice -->
+            <details class="limitations">
+                <summary class="limitations-toggle">我能幫你做什麼呢？（點擊展開）</summary>
+                <div class="limitations-content">
+                    <div class="limitations-can">
+                        <h4>能做的事</h4>
+                        <ul>
+                            <li>檢查 HTML 裡的 SEO 標籤（title、meta、OG 等）</li>
+                            <li>驗證結構化資料（JSON-LD Schema）</li>
+                            <li>分析社交分享設定</li>
+                            <li>用毒舌的方式告訴你問題在哪</li>
+                        </ul>
+                    </div>
+                    <div class="limitations-cannot">
+                        <h4>不能做的事</h4>
+                        <ul>
+                            <li>整站爬蟲（只分析你輸入的單一頁面）</li>
+                            <li>分析 JavaScript 渲染的內容（SPA 網站可能不準）</li>
+                            <li>檢測網站速度（Core Web Vitals 需要真實瀏覽器）</li>
+                            <li>分析反向連結、排名、流量（需要第三方 API）</li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- Result Section -->
+        <section id="result-section" class="result-section hidden">
+            <!-- Score Card -->
+            <div class="score-card">
+                <div class="score-circle">
+                    <span id="score-value" class="score-value">0</span>
+                    <span class="score-label">分</span>
+                </div>
+                <div id="grade-badge" class="grade-badge grade-f">F</div>
+                <p id="grade-roast" class="grade-roast"></p>
+                <p id="analyzed-url" class="analyzed-url"></p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-item stat-passed">
+                    <span id="passed-count" class="stat-value">0</span>
+                    <span class="stat-label">通過</span>
+                </div>
+                <div class="stat-item stat-failed">
+                    <span id="issue-count" class="stat-value">0</span>
+                    <span class="stat-label">問題</span>
+                </div>
+                <div class="stat-item stat-total">
+                    <span id="total-count" class="stat-value">0</span>
+                    <span class="stat-label">總項目</span>
+                </div>
+            </div>
+
+            <!-- Issues List -->
+            <div id="issues-container" class="issues-container">
+                <h2 class="section-title">
+                    <span class="icon-warning"></span>
+                    問題清單（準備被罵）
+                </h2>
+                <div id="issues-list" class="issues-list"></div>
+            </div>
+
+            <!-- Passed List -->
+            <div id="passed-container" class="passed-container">
+                <h2 class="section-title section-title-success">
+                    <span class="icon-check"></span>
+                    通過項目
+                </h2>
+                <div id="passed-list" class="passed-list"></div>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <section id="error-section" class="error-section hidden">
+            <div class="error-card">
+                <div class="error-icon">!</div>
+                <p id="error-message" class="error-message"></p>
+                <p id="error-roast" class="error-roast"></p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="disclaimer">
+                本工具僅供參考，吐槽內容純屬娛樂，請認真對待 SEO，不認真對待吐槽。
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        const form = document.getElementById('analyze-form');
+        const urlInput = document.getElementById('url-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultSection = document.getElementById('result-section');
+        const errorSection = document.getElementById('error-section');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const url = urlInput.value.trim();
+            if (!url) {
+                showError('請輸入網址', '空白的輸入框是在考驗我的耐心嗎？');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            resultSection.classList.add('hidden');
+            errorSection.classList.add('hidden');
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url }),
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.message, data.roast);
+                } else {
+                    showResult(data);
+                }
+            } catch (err) {
+                showError('網路錯誤', '連我都連不上，你的網站還有救嗎？');
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showError(message, roast) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-roast').textContent = roast || '';
+            errorSection.classList.remove('hidden');
+            resultSection.classList.add('hidden');
+            errorSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showResult(data) {
+            // Score
+            const scoreValue = document.getElementById('score-value');
+            animateNumber(scoreValue, 0, data.score, 1000);
+
+            // Grade
+            const gradeBadge = document.getElementById('grade-badge');
+            gradeBadge.textContent = data.grade;
+            gradeBadge.className = `grade-badge grade-${data.grade.toLowerCase()}`;
+
+            // Grade roast
+            document.getElementById('grade-roast').textContent = data.grade_roast;
+
+            // URL
+            document.getElementById('analyzed-url').textContent = data.url;
+
+            // Stats
+            document.getElementById('passed-count').textContent = data.passed_count;
+            document.getElementById('issue-count').textContent = data.issue_count;
+            document.getElementById('total-count').textContent = data.total_checks;
+
+            // Issues
+            const issuesList = document.getElementById('issues-list');
+            issuesList.innerHTML = '';
+
+            if (data.issues.length === 0) {
+                issuesList.innerHTML = '<p class="no-issues">沒有問題？不可能，讓我再看看...</p>';
+            } else {
+                data.issues.forEach((issue, index) => {
+                    const issueEl = createIssueElement(issue, index);
+                    issuesList.appendChild(issueEl);
+                });
+            }
+
+            // Passed
+            const passedList = document.getElementById('passed-list');
+            passedList.innerHTML = '';
+
+            data.passed.forEach(item => {
+                const passedEl = createPassedElement(item);
+                passedList.appendChild(passedEl);
+            });
+
+            // Show result
+            errorSection.classList.add('hidden');
+            resultSection.classList.remove('hidden');
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function createIssueElement(issue, index) {
+            const div = document.createElement('div');
+            div.className = 'issue-item';
+            div.style.animationDelay = `${index * 0.1}s`;
+
+            div.innerHTML = `
+                <div class="issue-header">
+                    <span class="issue-name">${issue.name}</span>
+                    <span class="issue-weight">-${issue.weight} 分</span>
+                </div>
+                <div class="issue-roast">${issue.roast}</div>
+                ${issue.value ? `<div class="issue-value">目前值：${formatValue(issue.value)}</div>` : ''}
+            `;
+
+            return div;
+        }
+
+        function createPassedElement(item) {
+            const div = document.createElement('div');
+            div.className = 'passed-item';
+
+            div.innerHTML = `
+                <span class="passed-icon"></span>
+                <span class="passed-name">${item.name}</span>
+                ${item.value && item.value !== 'no_images' ? `<span class="passed-value">${formatValue(item.value)}</span>` : ''}
+            `;
+
+            return div;
+        }
+
+        function formatValue(value) {
+            if (Array.isArray(value)) {
+                return value.join(', ');
+            }
+            if (typeof value === 'string' && value.length > 60) {
+                return value.substring(0, 60) + '...';
+            }
+            return value;
+        }
+
+        function animateNumber(element, start, end, duration) {
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(start + (end - start) * easeOut);
+
+                element.textContent = current;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+    </script>
+</body>
+</html>
