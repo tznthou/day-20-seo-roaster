@@ -277,21 +277,35 @@ This tool's checks reference:
 
 ## Thoughts
 
+### What Even Is SEO?
+
+Today I randomly asked myself: What even is SEO?
+
+Why do we do SEO? What does it actually help us with? Can SEO be quantified? Why is everyone so eager to get their SEO right?
+
+Of course, SEO matters—who doesn't want their website to rank at the top of search results?
+
+But practically speaking, what is SEO?
+
+It's just Google's ranking order.
+
+### The "Experience Value" Collection
+
+Have you noticed that Google's ranking algorithm changes every year? Those rules like "Title should be 55-60 characters" or "Only one H1 per page" are actually experience values that people reverse-engineered from ranking results after spending countless hours.
+
+Are these experience values accurate? Maybe. Maybe not.
+
+Google has never publicly stated these numbers. We just noticed "websites that do this seem to rank better," then compiled them into one SEO checklist after another.
+
+So what this tool checks isn't really "rules"—it's more like a "community-curated experience value collection."
+
 ### Why Roast?
 
-There are too many SEO tools out there, all with cold reports and numbers.
+Just doing plain SEO analysis on webpages seemed... boring.
 
-We wanted to try: what if SEO reports became savage roasts? Would they be more memorable? Would people actually fix the issues?
+So I thought, what if I turned cold detection reports into savage roasts? That would be more interesting, right?
 
 Turns out: getting roasted is actually motivating.
-
-### About "Correct" SEO
-
-The internet is full of SEO myths like "Title must be 55-60 characters" or "Keyword density should be 1-2%".
-
-Actually, most are guidelines, not requirements. Google never stated these numbers.
-
-This tool reminds you of fundamentals, but doesn't treat guidelines as absolute truth.
 
 ### For Vibe Coders
 
