@@ -19,6 +19,7 @@
 
 - **20 項 SEO 檢測**：涵蓋基礎、社交、結構化資料等面向
 - **毒舌傲嬌吐槽**：每個問題都附帶隨機抽取的毒舌+傲嬌評論
+- **虛擬角色「小槽」**：5 種表情隨分析結果動態切換，讓吐槽更有溫度
 - **等級評分系統**：S/A/B/C/F 五級評分，附等級總評
 - **軟糖黏土 UI**：Claymorphism 風格，Q 彈立體的 3D 黏土視覺
 - **零依賴前端**：純 HTML/CSS/JS，無需 npm
@@ -242,7 +243,13 @@ day-20-seo-roaster/
 │       ├── templates/
 │       │   └── index.html      # 前端頁面
 │       └── static/
-│           └── v1-candy-clay.css  # 軟糖黏土風格樣式
+│           ├── v1-candy-clay.css  # 軟糖黏土風格樣式
+│           └── mascot/            # 小槽表情包
+│               ├── default.webp   # 預設
+│               ├── loading.webp   # 分析中
+│               ├── roast.webp     # 吐槽模式
+│               ├── reluctant.webp # 不甘心認可
+│               └── sigh.webp      # 嘆氣
 ├── pyproject.toml
 ├── Procfile                    # Gunicorn 啟動設定
 ├── README.md

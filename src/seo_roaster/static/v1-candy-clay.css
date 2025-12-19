@@ -133,6 +133,36 @@ body {
     padding: var(--spacing-xl) 0;
 }
 
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-lg);
+}
+
+.mascot {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(255, 126, 179, 0.3));
+    transition: transform var(--transition-bounce), filter var(--transition-fast);
+    animation: float 3s ease-in-out infinite;
+}
+
+.mascot:hover {
+    transform: scale(1.1) rotate(-5deg);
+    filter: drop-shadow(0 12px 24px rgba(255, 126, 179, 0.4));
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.header-text {
+    text-align: left;
+}
+
 .title {
     font-size: 2.8rem;
     font-weight: 800;
@@ -568,6 +598,12 @@ body {
     .input-wrapper { flex-direction: column; }
     .btn-submit { width: 100%; }
     .limitations-content { grid-template-columns: 1fr; }
+    .header-content {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    .header-text { text-align: center; }
+    .mascot { width: 100px; height: 100px; }
 }
 
 /* ===== Cute Scrollbar ===== */

@@ -49,10 +49,15 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1 class="title">
-                <span class="cute">SEO</span> 健檢小幫手
-            </h1>
-            <p class="subtitle">讓我來幫你看看網站有多棒～</p>
+            <div class="header-content">
+                <img id="mascot" class="mascot" src="{{ url_for('static', filename='mascot/default.webp') }}" alt="小槽" width="120" height="120">
+                <div class="header-text">
+                    <h1 class="title">
+                        <span class="cute">SEO</span> 吐槽器
+                    </h1>
+                    <p class="subtitle">把網址交出來，讓我看看你又搞砸了什麼</p>
+                </div>
+            </div>
         </header>
 
         <!-- Input Section -->
@@ -63,24 +68,24 @@
                         type="text"
                         id="url-input"
                         name="url"
-                        placeholder="輸入網址，例如：example.com"
+                        placeholder="網址丟這裡"
                         autocomplete="off"
                         spellcheck="false"
                         maxlength="2048"
                     >
                     <button type="submit" id="submit-btn" class="btn-submit">
-                        <span class="btn-text">開始診斷 ♪</span>
-                        <span class="btn-loading">努力檢查中...</span>
+                        <span class="btn-text">開始吐槽</span>
+                        <span class="btn-loading">正在找你的問題...一定很多</span>
                     </button>
                 </div>
             </form>
 
             <!-- Limitations Notice -->
             <details class="limitations">
-                <summary class="limitations-toggle">我能幫你做什麼呢？（點擊展開）</summary>
+                <summary class="limitations-toggle">本小姐能做什麼（點開看）</summary>
                 <div class="limitations-content">
                     <div class="limitations-can">
-                        <h4>能做的事</h4>
+                        <h4>✓ 能做</h4>
                         <ul>
                             <li>檢查 HTML 裡的 SEO 標籤（title、meta、OG 等）</li>
                             <li>驗證結構化資料（JSON-LD Schema）</li>
@@ -89,7 +94,7 @@
                         </ul>
                     </div>
                     <div class="limitations-cannot">
-                        <h4>不能做的事</h4>
+                        <h4>✗ 別肖想</h4>
                         <ul>
                             <li>整站爬蟲（只分析你輸入的單一頁面）</li>
                             <li>分析 JavaScript 渲染的內容（SPA 網站可能不準）</li>
@@ -134,7 +139,7 @@
             <div id="issues-container" class="issues-container">
                 <h2 class="section-title">
                     <span class="icon-warning"></span>
-                    問題清單（準備被罵）
+                    你的問題在這
                 </h2>
                 <div id="issues-list" class="issues-list"></div>
             </div>
@@ -143,7 +148,7 @@
             <div id="passed-container" class="passed-container">
                 <h2 class="section-title section-title-success">
                     <span class="icon-check"></span>
-                    通過項目
+                    勉強算你過關的
                 </h2>
                 <div id="passed-list" class="passed-list"></div>
             </div>
@@ -161,7 +166,7 @@
         <!-- Footer -->
         <footer class="footer">
             <p class="disclaimer">
-                本工具僅供參考，吐槽內容純屬娛樂，請認真對待 SEO，不認真對待吐槽。
+                吐槽歸吐槽，SEO 還是要認真做啦...才不是關心你
             </p>
         </footer>
     </div>
@@ -172,6 +177,35 @@
         const submitBtn = document.getElementById('submit-btn');
         const resultSection = document.getElementById('result-section');
         const errorSection = document.getElementById('error-section');
+        const loadingText = submitBtn.querySelector('.btn-loading');
+        const mascot = document.getElementById('mascot');
+
+        // 吉祥物表情
+        const mascotExpressions = {
+            default: "{{ url_for('static', filename='mascot/default.webp') }}",
+            loading: "{{ url_for('static', filename='mascot/loading.webp') }}",
+            roast: "{{ url_for('static', filename='mascot/roast.webp') }}",
+            reluctant: "{{ url_for('static', filename='mascot/reluctant.webp') }}",
+            sigh: "{{ url_for('static', filename='mascot/sigh.webp') }}"
+        };
+
+        function setMascotExpression(expression) {
+            mascot.src = mascotExpressions[expression] || mascotExpressions.default;
+        }
+
+        // 載入中隨機台詞
+        const loadingMessages = [
+            '正在找你的問題...一定很多',
+            '在看了在看了...催什麼',
+            '讓我好好檢查一下',
+            '這網站...嗯...讓我仔細看看',
+            '正在分析...希望別太慘',
+            '掃描中...做好心理準備',
+        ];
+
+        function getRandomLoadingMessage() {
+            return loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+        }
 
         // 簡單的 URL 格式驗證
         function isValidUrl(url) {
@@ -185,21 +219,23 @@
 
             const url = urlInput.value.trim();
             if (!url) {
-                showError('請輸入網址', '空白的輸入框是在考驗我的耐心嗎？');
+                showError('請輸入網址', '空白是怎樣？要我通靈嗎？');
                 return;
             }
 
             // 前端 URL 格式驗證
             if (!isValidUrl(url)) {
-                showError('網址格式錯誤', '這看起來不像網址欸...確定沒打錯嗎？');
+                showError('網址格式錯誤', '這什麼鬼網址？你認真的嗎？');
                 return;
             }
 
             // Show loading state
+            loadingText.textContent = getRandomLoadingMessage();
             submitBtn.classList.add('loading');
             submitBtn.disabled = true;
             resultSection.classList.add('hidden');
             errorSection.classList.add('hidden');
+            setMascotExpression('loading');
 
             try {
                 const response = await fetch('/analyze', {
@@ -218,7 +254,7 @@
                     showResult(data);
                 }
             } catch (err) {
-                showError('網路錯誤', '連我都連不上，你的網站還有救嗎？');
+                showError('網路錯誤', '連不上...是你的網站掛了還是我的問題？算了肯定是你的問題');
             } finally {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
@@ -231,6 +267,7 @@
             errorSection.classList.remove('hidden');
             resultSection.classList.add('hidden');
             errorSection.scrollIntoView({ behavior: 'smooth' });
+            setMascotExpression('sigh');
         }
 
         function showResult(data) {
@@ -242,6 +279,14 @@
             const gradeBadge = document.getElementById('grade-badge');
             gradeBadge.textContent = data.grade;
             gradeBadge.className = `grade-badge grade-${data.grade.toLowerCase()}`;
+
+            // 根據等級切換表情
+            const grade = data.grade.toUpperCase();
+            if (grade === 'S' || grade === 'A') {
+                setMascotExpression('reluctant');  // 不情願地承認你還行
+            } else {
+                setMascotExpression('roast');      // 準備好吐槽你了
+            }
 
             // Grade roast
             document.getElementById('grade-roast').textContent = data.grade_roast;
@@ -259,7 +304,7 @@
             issuesList.innerHTML = '';
 
             if (data.issues.length === 0) {
-                issuesList.innerHTML = '<p class="no-issues">沒有問題？不可能，讓我再看看...</p>';
+                issuesList.innerHTML = '<p class="no-issues">嘖...居然找不到問題。你是來炫耀的嗎？</p>';
             } else {
                 data.issues.forEach((issue, index) => {
                     const issueEl = createIssueElement(issue, index);

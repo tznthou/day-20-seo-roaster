@@ -19,6 +19,7 @@ Enter a URL, get a brutally honest SEO analysis report. Improve your website thr
 
 - **20 SEO Checks**: Covers fundamentals, social, structured data, and more
 - **Savage Tsundere Roasts**: Each issue comes with brutal + tsundere style commentary
+- **Virtual Mascot "Xiao Cao"**: 5 dynamic expressions that change based on analysis results
 - **Grade System**: S/A/B/C/F ratings with overall assessment
 - **Candy Clay UI**: Claymorphism style with bouncy 3D clay visuals
 - **Zero Frontend Dependencies**: Pure HTML/CSS/JS, no npm required
@@ -242,7 +243,13 @@ day-20-seo-roaster/
 │       ├── templates/
 │       │   └── index.html      # Frontend page
 │       └── static/
-│           └── v1-candy-clay.css  # Candy clay theme styles
+│           ├── v1-candy-clay.css  # Candy clay theme styles
+│           └── mascot/            # Xiao Cao expressions
+│               ├── default.webp   # Default
+│               ├── loading.webp   # Analyzing
+│               ├── roast.webp     # Roast mode
+│               ├── reluctant.webp # Reluctant approval
+│               └── sigh.webp      # Sigh
 ├── pyproject.toml
 ├── Procfile                    # Gunicorn config
 ├── README.md
