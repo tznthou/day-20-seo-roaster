@@ -15,6 +15,7 @@ from .roasts import (
     get_error_roast,
     get_grade_roast,
     get_roast,
+    get_suggestion,
 )
 
 # 設定日誌
@@ -150,6 +151,7 @@ def analyze():
             "message": message,
             "value": check_data.get("value"),
             "roast": get_roast(check_key, message, **roast_params),
+            "suggestion": get_suggestion(check_key, message),
             "weight": issue["weight"],
         })
 

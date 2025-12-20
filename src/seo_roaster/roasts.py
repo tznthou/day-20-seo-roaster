@@ -388,3 +388,115 @@ CHECK_NAMES = {
 def get_check_name(check_key: str) -> str:
     """取得檢測項目的中文名稱"""
     return CHECK_NAMES.get(check_key, check_key)
+
+
+# 修改建議（正經版，給 AI 工具看的）
+SUGGESTIONS = {
+    "title": {
+        "missing": "請新增 <title> 標籤",
+        "empty": "請填寫 <title> 標籤內容",
+        "too_short": "建議標題長度 30-60 字元",
+        "too_long": "建議標題長度 30-60 字元，目前過長會被截斷",
+    },
+    "meta_description": {
+        "missing": '請新增 <meta name="description" content="..."> 標籤，長度建議 120-160 字元',
+        "empty": "請填寫 meta description 內容，長度建議 120-160 字元",
+        "too_short": "建議描述長度 120-160 字元",
+        "too_long": "建議描述長度 120-160 字元，目前過長會被截斷",
+    },
+    "canonical": {
+        "missing": '請新增 <link rel="canonical" href="頁面完整網址"> 標籤',
+        "empty": "請填寫 canonical 標籤的 href 值",
+    },
+    "viewport": {
+        "missing": '請新增 <meta name="viewport" content="width=device-width, initial-scale=1.0">',
+        "empty": "請設定 viewport 的 content 值",
+    },
+    "lang": {
+        "missing": '請在 <html> 標籤加上 lang 屬性，例如 <html lang="zh-TW">',
+        "no_html_tag": "請確保有完整的 <html> 標籤結構",
+    },
+    "h1": {
+        "missing": "請新增 <h1> 標題，作為頁面主標題",
+        "empty": "請填寫 <h1> 標題內容",
+        "multiple": "建議頁面只保留一個 <h1> 標題，其他改用 <h2> 或更低層級",
+    },
+    "https": {
+        "http_only": "建議使用 HTTPS 協定，可使用 Let's Encrypt 免費 SSL 憑證",
+    },
+    "robots": {
+        "noindex": "請檢查 robots meta 標籤或 X-Robots-Tag，移除 noindex 設定（如果想被搜尋引擎索引）",
+    },
+    "favicon": {
+        "missing": '請新增 <link rel="icon" href="favicon.ico"> 或使用 SVG/PNG 格式的網站圖示',
+    },
+    "img_alt": {
+        "low_ratio": "請為所有 <img> 標籤加上 alt 屬性，描述圖片內容",
+        "medium_ratio": "建議提高 alt 覆蓋率，為更多圖片加上描述",
+    },
+    "og_title": {
+        "missing": '請新增 <meta property="og:title" content="分享標題">',
+        "empty": "請填寫 og:title 的內容",
+    },
+    "og_description": {
+        "missing": '請新增 <meta property="og:description" content="分享描述">',
+        "empty": "請填寫 og:description 的內容",
+    },
+    "og_image": {
+        "missing": '請新增 <meta property="og:image" content="圖片完整網址">，建議尺寸 1200x630',
+        "empty": "請填寫 og:image 的圖片網址",
+    },
+    "twitter_card": {
+        "missing": '請新增 <meta name="twitter:card" content="summary_large_image">',
+    },
+    "json_ld": {
+        "missing": "建議新增 JSON-LD 結構化資料，參考 schema.org 選擇適合的類型",
+    },
+    "json_ld_types": {
+        "no_schema": "請新增 JSON-LD 結構化資料",
+        "no_types": '請在 JSON-LD 中加入 @type 屬性，例如 "@type": "WebPage"',
+    },
+    "json_ld_valid": {
+        "no_schema": "請新增 JSON-LD 結構化資料",
+        "invalid_json": "請修正 JSON-LD 語法錯誤，確保 JSON 格式正確",
+    },
+    "hreflang": {
+        "not_applicable": "（單語系網站可略過此項）",
+        "missing": '如有多語言版本，請新增 <link rel="alternate" hreflang="語言代碼" href="對應網址">',
+    },
+    "published_time": {
+        "missing": '文章類型建議新增 <meta property="article:published_time" content="ISO8601日期">',
+    },
+    "snippet_control": {
+        "missing": '可考慮使用 <meta name="robots" content="max-snippet:-1"> 控制搜尋結果呈現',
+    },
+}
+
+
+def get_suggestion(check_key: str, message: Optional[str] = None) -> str:
+    """
+    取得修改建議
+
+    Args:
+        check_key: 檢測項目 key（如 'title', 'meta_description'）
+        message: 問題類型（如 'missing', 'too_short'）
+
+    Returns:
+        str: 對應的修改建議
+    """
+    if check_key not in SUGGESTIONS:
+        return ""
+
+    suggestion_dict = SUGGESTIONS[check_key]
+
+    if message and message in suggestion_dict:
+        return suggestion_dict[message]
+
+    # 嘗試取得 default，否則回傳第一個建議
+    if "default" in suggestion_dict:
+        return suggestion_dict["default"]
+
+    if suggestion_dict:
+        return list(suggestion_dict.values())[0]
+
+    return ""

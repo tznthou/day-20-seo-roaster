@@ -392,6 +392,52 @@ body {
     box-shadow: inset 2px 2px 8px rgba(255, 255, 255, 0.5);
 }
 
+/* ===== Section Header - 區塊標題列 ===== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+/* ===== Copy Button - 複製按鈕 ===== */
+.btn-copy {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: linear-gradient(145deg, var(--candy-lavender), var(--candy-pink-light));
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    box-shadow: var(--shadow-clay);
+    transition:
+        transform var(--transition-bounce),
+        box-shadow var(--transition-clay),
+        background var(--transition-fast);
+    white-space: nowrap;
+}
+
+.btn-copy:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-clay-hover);
+}
+
+.btn-copy:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: var(--shadow-clay-pressed);
+}
+
+.btn-copy .btn-copy-done { display: none; }
+.btn-copy.copied .btn-copy-text { display: none; }
+.btn-copy.copied .btn-copy-done { display: inline; }
+
+.btn-copy.copied {
+    background: linear-gradient(145deg, var(--candy-mint), #a8f0d4);
+}
+
 /* ===== Issues - 軟糖問題卡 ===== */
 .issue-item {
     background: var(--bg-card);
@@ -604,6 +650,14 @@ body {
     }
     .header-text { text-align: center; }
     .mascot { width: 100px; height: 100px; }
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn-copy {
+        width: 100%;
+        text-align: center;
+    }
 }
 
 /* ===== Cute Scrollbar ===== */

@@ -19,6 +19,7 @@ Enter a URL, get a brutally honest SEO analysis report. Improve your website thr
 
 - **20 SEO Checks**: Covers fundamentals, social, structured data, and more
 - **Savage Tsundere Roasts**: Each issue comes with brutal + tsundere style commentary
+- **One-Click Copy Fix List**: Export issues as JSON format, paste directly to AI tools for fixing
 - **Virtual Mascot "Xiao Cao"**: 5 dynamic expressions that change based on analysis results
 - **Grade System**: S/A/B/C/F ratings with overall assessment
 - **Candy Clay UI**: Claymorphism style with bouncy 3D clay visuals
@@ -95,6 +96,34 @@ Enter a URL, get a brutally honest SEO analysis report. Improve your website thr
 
 **No HTTPS:**
 > "Still using HTTP? It's 2025, your security is stuck in the stone age!"
+
+---
+
+## One-Click Copy Fix List
+
+After analysis, click the "📋 Here's your fix list, you're welcome!" button to copy the JSON-formatted issue list:
+
+```json
+{
+  "url": "https://example.com",
+  "issues": [
+    {
+      "key": "title",
+      "name": "Page Title (title)",
+      "value": "Short title",
+      "suggestion": "Recommended title length is 30-60 characters"
+    },
+    {
+      "key": "og_image",
+      "name": "Open Graph Image",
+      "value": null,
+      "suggestion": "Add <meta property=\"og:image\" content=\"full image URL\">, recommended size 1200x630"
+    }
+  ]
+}
+```
+
+Paste directly to Cursor, Claude Code, or other AI tools to let them fix your SEO issues.
 
 ---
 

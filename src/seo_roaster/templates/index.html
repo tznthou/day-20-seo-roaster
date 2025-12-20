@@ -137,10 +137,16 @@
 
             <!-- Issues List -->
             <div id="issues-container" class="issues-container">
-                <h2 class="section-title">
-                    <span class="icon-warning"></span>
-                    你的問題在這
-                </h2>
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="icon-warning"></span>
+                        你的問題在這
+                    </h2>
+                    <button id="copy-issues-btn" class="btn-copy" type="button">
+                        <span class="btn-copy-text">📋 本大小姐賜你修復清單</span>
+                        <span class="btn-copy-done">✓ 已複製，快去修！</span>
+                    </button>
+                </div>
                 <div id="issues-list" class="issues-list"></div>
             </div>
 
@@ -179,6 +185,10 @@
         const errorSection = document.getElementById('error-section');
         const loadingText = submitBtn.querySelector('.btn-loading');
         const mascot = document.getElementById('mascot');
+        const copyBtn = document.getElementById('copy-issues-btn');
+
+        // 儲存最新的分析結果
+        let lastAnalysisData = null;
 
         // 吉祥物表情
         const mascotExpressions = {
@@ -271,6 +281,9 @@
         }
 
         function showResult(data) {
+            // 儲存分析結果供複製使用
+            lastAnalysisData = data;
+
             // Score
             const scoreValue = document.getElementById('score-value');
             animateNumber(scoreValue, 0, data.score, 1000);
@@ -320,6 +333,14 @@
                 const passedEl = createPassedElement(item);
                 passedList.appendChild(passedEl);
             });
+
+            // 控制複製按鈕顯示
+            if (data.issues.length === 0) {
+                copyBtn.style.display = 'none';
+            } else {
+                copyBtn.style.display = '';
+                copyBtn.classList.remove('copied');
+            }
 
             // Show result
             errorSection.classList.add('hidden');
@@ -398,6 +419,39 @@
 
             requestAnimationFrame(update);
         }
+
+        // 複製問題清單為 JSON
+        async function copyIssuesAsJSON() {
+            if (!lastAnalysisData || lastAnalysisData.issues.length === 0) {
+                return;
+            }
+
+            const copyData = {
+                url: lastAnalysisData.url,
+                issues: lastAnalysisData.issues.map(issue => ({
+                    key: issue.key,
+                    name: issue.name,
+                    value: issue.value,
+                    suggestion: issue.suggestion
+                }))
+            };
+
+            try {
+                await navigator.clipboard.writeText(JSON.stringify(copyData, null, 2));
+
+                // 顯示複製成功
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                console.error('複製失敗:', err);
+            }
+        }
+
+        // 綁定複製按鈕事件
+        copyBtn.addEventListener('click', copyIssuesAsJSON);
 
     </script>
 </body>
